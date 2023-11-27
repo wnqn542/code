@@ -1,0 +1,83 @@
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.ListIterator;
+import java.util.Queue;
+import java.util.StringTokenizer;
+class Point{
+	private int x;
+	private int y;
+	Point(int x, int y){
+		this.x = x;
+		this.y = y;
+	}
+	int getX() {return x;}
+	int getY() {return y;}
+}
+public class Main {
+	public static void main(String[] args) throws IOException{
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+		StringTokenizer st = new StringTokenizer(br.readLine(), " ");
+		int N = Integer.parseInt(st.nextToken());
+		boolean visit[][] = new boolean[N][N];
+		LinkedList<Point> list = new LinkedList<>();
+		Queue<Point> q = new LinkedList<>();
+		int k[][] = new int[N][N];
+		LinkedList<Integer> size = new LinkedList<>();
+		for(int i = 0; i < N; i++) {
+			String s = br.readLine();
+			for(int j = 0; j < N; j++) {
+				int num = s.charAt(j)-'0';
+				if(num == 1) {
+					list.add(new Point(i,j));
+					k[i][j] = num;
+				}
+			}
+		}
+		int cx[] = {-1,1,0,0};
+		int cy[] = {0,0,-1,1};
+		int nextx = 0; int nexty = 0; int cnt = 0;
+		while(!list.isEmpty()) {
+			Point p = list.remove();
+			if(visit[p.getX()][p.getY()])
+				continue;
+			else {
+				int area = 0;
+				q.add(p);
+				while(!q.isEmpty()) {
+					Point p1 = q.remove();
+					visit[p.getX()][p.getY()] = true;
+					area++;
+					for(int j = 0; j < 4; j++) {
+					nextx = p1.getX() + cx[j];
+					nexty = p1.getY() + cy[j];
+					if(0 <= nextx && nextx < N && 0 <= nexty && nexty < N) {
+						if(k[nextx][nexty] == 1 && !visit[nextx][nexty]) {
+							q.add(new Point(nextx,nexty));
+							visit[nextx][nexty] = true;
+							}
+						}
+					}
+				}
+				size.add(area);
+				cnt++;
+			}
+		}
+		System.out.println(cnt);
+		Collections.sort(size);
+		ListIterator<Integer> i = size.listIterator();
+		while(i.hasNext()) {
+			System.out.println(i.next());
+		}
+		
+	}
+}
+
+linkedlist를 통하여 1의 위치를 다 넣고, 방문 되지 않았을 경우에만 bfs를 실행하여 단지가 총 몇개인지 구하고,
+단지의 크기를 새로운 linkedlist에 넣어 오름차순으로 정렬하고 출력했던 문제.

@@ -1,0 +1,57 @@
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.ListIterator;
+import java.util.Queue;
+import java.util.StringTokenizer;
+public class Main {
+	public static void main(String[] args) throws IOException{
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+		StringTokenizer st = new StringTokenizer(br.readLine(), " ");
+		int f = Integer.parseInt(st.nextToken());
+		int s = Integer.parseInt(st.nextToken());
+		int g = Integer.parseInt(st.nextToken());
+		int u = Integer.parseInt(st.nextToken());
+		int d = Integer.parseInt(st.nextToken());
+		boolean v[] = new boolean[f+1];
+		int m[] = new int[f+1];
+		Queue<Integer> q = new LinkedList<>();
+		q.add(s);
+		v[s] = true;
+		int dx[] = {u,-d};
+		int nextn = 0;
+		while(!q.isEmpty()) {
+			int num = q.poll();
+			for(int i = 0; i < 2; i++) {
+				nextn = num + dx[i];
+				if(0 < nextn && nextn < f+1) {
+				if(!v[nextn]) {
+					q.add(nextn);
+					v[nextn] = true;
+					m[nextn] = m[num] + 1;
+					}
+				}
+			}
+			if(v[g])
+				break;
+		}
+		if(!v[g])
+			bw.write("use the stairs");
+		else
+			bw.write(m[g]+"");
+		bw.flush();
+		bw.close();
+	}
+}
+
+최소값이 0일수도 있는데 조건을 m[g] == 0으로 해서 틀렸던 문제.
+dx를 u,-d로 설정하여 위 아래로 갈 수 있게 한다.
+bfs를 통해 dx가 2개이니깐 2번 for문을 돌리고, 그 층을 방문하면 true로 바꾸고 그 층에 대한 m값은 누르기 전층 m값+1을 해준다.
+그리고 그 층에 방문하면 while문을 종료한다.
+그 층의 방문이 false이면 use the stairs를 출력.

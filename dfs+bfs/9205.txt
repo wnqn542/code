@@ -1,0 +1,94 @@
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.lang.Math;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.Queue;
+import java.util.StringTokenizer;
+class Point{
+	private int x;
+	private int y;
+	Point(int x, int y){
+		this.x = x;
+		this.y = y;
+	}
+	int getX() {return x;}
+	int getY() {return y;}
+}
+public class Main {
+	public static void main(String[] args) throws IOException{
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+		StringTokenizer st = new StringTokenizer(br.readLine(), " ");
+		int t = Integer.parseInt(st.nextToken());
+		for(int i = 0; i < t; i++) {
+			st = new StringTokenizer(br.readLine(), " ");
+			int n = Integer.parseInt(st.nextToken());
+			Point p[] = new Point[n+2];
+			boolean visit[] = new boolean[n+2];
+			for(int j = 0; j < n+2; j++) {
+				st = new StringTokenizer(br.readLine(), " ");
+				int x = Integer.parseInt(st.nextToken());
+				int y = Integer.parseInt(st.nextToken());
+				p[j] = new Point(x,y);
+			}
+			bfs(p,visit,n);
+			for(int j = 0; j < n+2; j++) {
+				if(j == n+1 && visit[n+1]) {
+					bw.write("happy\n");
+					break;
+				}
+				else if(j == n+1 && !visit[n+1]) {
+					bw.write("sad\n");
+					break;
+				}
+			}
+		}
+		bw.flush();
+		bw.close();
+	}
+	static void bfs(Point p[],boolean visit[],int n) {
+		LinkedList<Integer> list[] = new LinkedList[n+3];
+		for(int i = 0; i < n+2; i++) {
+			list[i] = new LinkedList<Integer>();
+		}
+		for(int i = 0; i < n+2; i++) {
+			for(int j = 0; j < n+2; j++) {
+				if(i == j)
+					continue;
+				else {
+					list[i].add(j);
+					list[j].add(i);
+				}
+			}
+		}
+		Queue<Integer> q = new LinkedList<>();
+		visit[0] = true;
+		q.add(0);
+		while(!q.isEmpty()) {
+			int num = q.remove();
+			Iterator<Integer> iter = list[num].listIterator();
+			while(iter.hasNext()) {
+				int m = iter.next();
+				int k = Math.abs(p[num].getX()-p[m].getX()) + Math.abs(p[num].getY()-p[m].getY());
+				if(k <= 1000 && !visit[m]) {
+					visit[m] = true;
+					q.add(m);
+				}
+			}
+			if(visit[n+1])
+				break;
+		}
+	}
+}
+
+단순하게 풀려다가 여러번 틀린문제. bfs를 이용해서 풀었다.
+맥주의 개수는 변수에 안넣은 문제이다. - 맥주는 20개로 1000m를 갈 수 있기 때문에 맥주의 개수는 변수로 설정 안함. 맥주 == 1000m로 생각함.
+test case마다 bfs함수를 호출한다.
+bfs를 호출하면 모든 좌표를 양방향node로 연결한다.
+그리고 집을 시작으로 bfs를 시작한다.
+시작으로부터 좌표가 1000이하인 장소는 queue에 add한다 그리고 방문처리를 한다.
+그리고 페스티벌장소가 방문처리됬으면 while문을 탈출하고 happy를 출력한다. 페스티벌장소가 방문처리 안되었을경우 sad를 출력.

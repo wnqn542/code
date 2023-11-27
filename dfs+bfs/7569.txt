@@ -1,0 +1,97 @@
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.ListIterator;
+import java.util.Queue;
+import java.util.StringTokenizer;
+class point{
+	private int x;
+	private int y;
+	private int z;
+	point(int x,int y,int z){
+		this.x = x;
+		this.y = y;
+		this.z = z;
+	}
+	int getx() {return this.x;}
+	int gety() {return this.y;}
+	int getz() {return this.z;}
+}
+public class Main {
+	public static void main(String[] args) throws IOException{
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+		StringTokenizer st = new StringTokenizer(br.readLine(), " ");
+		int m = Integer.parseInt(st.nextToken());
+		int n = Integer.parseInt(st.nextToken());
+		int h = Integer.parseInt(st.nextToken());
+		int ma[][][] = new int[h][n][m];
+		boolean visit[][][] = new boolean[h][n][m];
+		Queue<point> q = new LinkedList<>();
+		for(int i = 0; i < h; i++) {
+			for(int j = 0; j < n; j++) {
+				st = new StringTokenizer(br.readLine(), " ");
+				for(int k = 0; k < m; k++) {
+					int num = Integer.parseInt(st.nextToken());
+					if(num == 1) {
+						visit[i][j][k] = true;
+						q.add(new point(i,j,k));
+						ma[i][j][k] = 0;
+					}
+					else if(num == -1)
+						visit[i][j][k] = true;
+					else
+						visit[i][j][k] = false;
+				}
+			}
+		}
+		int dx[] = {-1,1,0,0,0,0};
+		int dy[] = {0,0,-1,1,0,0};
+		int dz[] = {0,0,0,0,-1,1};
+		int max = 0;
+		int nextx = 0;int nexty = 0;int nextz = 0;
+		while(!q.isEmpty()) {
+			point p1 = q.poll();
+			for(int i = 0; i < 6; i++) {
+				nextx = p1.getx() + dx[i];
+				nexty = p1.gety() + dy[i];
+				nextz = p1.getz() + dz[i];
+				if(0 <= nextx && nextx < h && 0 <= nexty && nexty < n && 0 <= nextz && nextz < m) {
+					if(!visit[nextx][nexty][nextz]) {
+						q.add(new point(nextx,nexty,nextz));
+						visit[nextx][nexty][nextz] = true;
+						ma[nextx][nexty][nextz] = ma[p1.getx()][p1.gety()][p1.getz()] + 1;
+						if(ma[nextx][nexty][nextz] > max)
+							max = ma[nextx][nexty][nextz];
+					}
+				}
+			}
+		}
+		loop1:
+			for(int i = 0; i < h; i++) {
+				for(int j = 0; j < n; j++) {
+					for(int k = 0; k < m; k++) {
+						if(!visit[i][j][k]) {
+							max = -1;
+							break loop1;
+						}
+					}
+				}
+			}
+		bw.write(max+"");
+		bw.flush();
+		bw.close();
+	}
+}
+
+3차원 배열이긴 한데 최대값이 100까지라 3중 for문 사용 가능하다고 판단.
+토마토가 있는데 익은 토마토가 있는 칸과 토마토가 없는칸을 둘다 방문한 칸으로 설정.
+차이는 익은 토마토는 bfs로 계산하기 위해 queue에 넣었다.
+그리고 3차원 배열이기 때문에 상하좌우위아래로 토마토를 익기하기 위해 설정.
+또한 익는데 최대 시간을 구하는것이기 때문에, bfs를 통해 안익은 토마토가 익은 토마토로 바뀔때마다 +1씩 했다.
+마지막으로, 토마토가 안익은곳이 없는지 확인하여 없으면 -1을 출력.

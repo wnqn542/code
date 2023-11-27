@@ -1,0 +1,79 @@
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.ListIterator;
+import java.util.Queue;
+import java.util.StringTokenizer;
+class Graph{
+	private int V;
+	private LinkedList<Integer> N[];
+	static int cnt[];
+	private int E;
+	
+	Graph(int v){
+		V = v;
+		N = new LinkedList[v+1];
+		cnt = new int[v+1];
+		for(int i = 1; i <= v; i++) {
+			N[i] = new LinkedList();
+			if(i == V)
+				cnt[i] = 1;
+			else
+				cnt[i] = 0;
+		}
+	}
+	void addNode(int a,int b) {N[a].add(b); N[b].add(a);}
+	void setEnd(int e) {E = e;}
+	void DFSU(int v, boolean visit[]) {
+		visit[v] = true;
+		Iterator<Integer> i = N[v].listIterator();
+		while(i.hasNext()) {
+			int n = i.next();
+			if(!visit[n]) {
+				cnt[n] = cnt[v] + 1;
+				DFSU(n,visit);
+			}
+		}
+	}
+	void DFS(int v,int end) {
+		boolean visit[] = new boolean[V+1];
+		DFSU(v,visit);
+		if(!visit[end])
+			cnt[E] = -1;
+	}
+	int chon() {return cnt[E];}
+}
+public class Main {
+	public static void main(String[] args) throws IOException{
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+		StringTokenizer st = new StringTokenizer(br.readLine(), " ");
+		int v = Integer.parseInt(st.nextToken());
+		st = new StringTokenizer(br.readLine(), " ");
+		int start = Integer.parseInt(st.nextToken());
+		int end = Integer.parseInt(st.nextToken());
+		st = new StringTokenizer(br.readLine(), " ");
+		int n = Integer.parseInt(st.nextToken());
+		Graph g = new Graph(v);
+		g.setEnd(end);
+		for(int i = 0; i < n; i++) {
+			st = new StringTokenizer(br.readLine(), " ");
+			int a = Integer.parseInt(st.nextToken());
+			int b = Integer.parseInt(st.nextToken());
+			g.addNode(a, b); g.addNode(b, a);
+		}
+		g.DFS(start, end);
+		bw.write(g.chon()+"");
+		bw.flush();
+		bw.close();
+	}
+}
+
+그래프를 하나 만들어서 노드를 양방향 노드로 설정 후, 시작값과 끝값을 모두 dfs에 넣어서 끝값이 안나왔을 경우 -1을 출력,
+끝값이 나왔을 경우 번호에 대한 배열을 하나 만든 다음에 시작값부터 시작해서 그 번호에 대한 촌수를 하나씩 더해가면서
+시작값과 끝값의 촌수를 출력.
